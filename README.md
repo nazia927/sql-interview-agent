@@ -4,6 +4,9 @@ An AI-powered SQL interview practice app built with Streamlit.
 
 It helps users practice SQL questions by topic and difficulty, receive structured feedback, track weak areas, and improve through adaptive learning and mock interview simulation.
 
+## Live Demo  
+https://sql-interview-coach.streamlit.app/
+
 ## Features
 
 - Practice SQL questions across multiple topics
