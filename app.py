@@ -13,7 +13,117 @@ from db import (
 )
 from evaluator import evaluate_sql_answer
 
-st.set_page_config(page_title="AI SQL Interview Coach", layout="wide")
+st.set_page_config(page_title="AI SQL Interview Coach", page_icon="🧠", layout="wide")
+
+st.markdown("""
+<style>
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+h1, h2, h3 {
+    letter-spacing: -0.5px;
+}
+
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 16px;
+    border-radius: 16px;
+}
+
+.stButton > button {
+    border-radius: 12px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.stTextArea textarea {
+    border-radius: 14px;
+}
+
+.stSelectbox > div > div {
+    border-radius: 12px;
+}
+
+.hero-box {
+    padding: 24px 28px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.16), rgba(15,23,42,0.4));
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 24px;
+}
+
+.section-card {
+    padding: 22px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 18px;
+}
+
+.question-card {
+    padding: 24px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-top: 8px;
+    margin-bottom: 18px;
+}
+
+.feedback-card {
+    padding: 22px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 18px;
+}
+
+.small-label {
+    font-size: 0.92rem;
+    opacity: 0.8;
+    margin-bottom: 4px;
+}
+
+.big-number {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.badge-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 14px 0 8px 0;
+}
+
+.badge {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(59,130,246,0.16);
+    border: 1px solid rgba(96,165,250,0.18);
+    font-size: 0.92rem;
+}
+
+.verdict-banner {
+    padding: 16px 18px;
+    border-radius: 16px;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+hr.soft {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 18px 0;
+}
+</style>
+""", unsafe_allow_html=True)
 
 init_db()
 
@@ -138,8 +248,15 @@ def exit_mock_interview():
     st.session_state.mock_completed = False
 
 
-st.title("AI SQL Interview Coach")
-st.caption("Practice SQL interview questions, get feedback, track weak areas, improve with adaptive difficulty, and simulate mock interviews.")
+st.markdown("""
+<div class="hero-box">
+    <h1 style="margin-bottom: 8px;">AI SQL Interview Coach</h1>
+    <div style="font-size: 1.05rem; opacity: 0.9;">
+        Practice SQL interview questions, get structured feedback, improve weak areas,
+        adapt difficulty dynamically, and simulate mock interviews.
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 tabs = ["Practice", "Feedback", "Progress"]
 
@@ -159,6 +276,8 @@ if tab1:
     st.subheader("Practice SQL")
 
     if not st.session_state.mock_mode:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+
         top_col1, top_col2 = st.columns([3, 1])
 
         with top_col1:
@@ -211,17 +330,28 @@ if tab1:
                     f"No {st.session_state.selected_difficulty} questions available for {st.session_state.selected_topic}."
                 )
 
+        st.markdown('</div>', unsafe_allow_html=True)
+
         if not st.session_state.current_question:
             st.info("Click 'Generate Question' to start practicing.")
 
         if st.session_state.current_question:
             q = st.session_state.current_question
 
-            st.markdown(f"### {q['title']}")
+            st.markdown('<div class="question-card">', unsafe_allow_html=True)
+            st.markdown(f"## {q['title']}")
             st.write(q["prompt"])
-            st.write(f"**Topic:** {q['topic']}")
-            st.write(f"**Difficulty:** {q['difficulty']}")
-            st.write("**Expected Concepts:** " + ", ".join(q["expected_concepts"]))
+
+            st.markdown(
+                f"""
+                <div class="badge-row">
+                    <span class="badge">Topic: {q['topic']}</span>
+                    <span class="badge">Difficulty: {q['difficulty']}</span>
+                    <span class="badge">Expected: {", ".join(q["expected_concepts"])}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
             user_sql = st.text_area(
                 "Write your SQL answer below:",
@@ -272,8 +402,10 @@ if tab1:
                     st.rerun()
                 else:
                     st.warning("Please enter your SQL answer before submitting.")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     else:
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
         st.subheader("Mock Interview Mode")
         st.warning("You are in mock interview mode. Feedback is hidden until the end.")
 
@@ -286,8 +418,15 @@ if tab1:
 
             st.markdown(f"### {q['title']}")
             st.write(q["prompt"])
-            st.write(f"**Topic:** {q['topic']}")
-            st.write(f"**Difficulty:** {q['difficulty']}")
+            st.markdown(
+                f"""
+                <div class="badge-row">
+                    <span class="badge">Topic: {q['topic']}</span>
+                    <span class="badge">Difficulty: {q['difficulty']}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
             mock_key = f"mock_answer_{st.session_state.mock_index}"
             user_sql = st.text_area(
@@ -297,56 +436,60 @@ if tab1:
                 placeholder="Write your SQL query here..."
             )
 
-            if st.button("Submit and Continue"):
-                if user_sql.strip():
-                    feedback = evaluate_sql_answer(
-                        question_prompt=q["prompt"],
-                        expected_concepts=q["expected_concepts"],
-                        user_sql=user_sql,
-                        topic=q["topic"],
-                        difficulty=q["difficulty"]
-                    )
+            col_a, col_b = st.columns([1, 1])
 
-                    st.session_state.mock_score.append(feedback["score"])
-                    st.session_state.mock_results.append(
-                        {
-                            "title": q["title"],
-                            "topic": q["topic"],
-                            "difficulty": q["difficulty"],
-                            "score": feedback["score"],
-                            "verdict": feedback["verdict"],
-                            "improved_query": feedback["improved_query"],
-                            "explanation": feedback["explanation"]
-                        }
-                    )
+            with col_a:
+                if st.button("Submit and Continue"):
+                    if user_sql.strip():
+                        feedback = evaluate_sql_answer(
+                            question_prompt=q["prompt"],
+                            expected_concepts=q["expected_concepts"],
+                            user_sql=user_sql,
+                            topic=q["topic"],
+                            difficulty=q["difficulty"]
+                        )
 
-                    save_attempt(
-                        question_id=q["id"],
-                        topic=q["topic"],
-                        difficulty=q["difficulty"],
-                        user_sql=user_sql,
-                        verdict=feedback["verdict"],
-                        score=int(feedback["score"]),
-                        weaknesses=", ".join(feedback["mistakes"])
-                    )
+                        st.session_state.mock_score.append(feedback["score"])
+                        st.session_state.mock_results.append(
+                            {
+                                "title": q["title"],
+                                "topic": q["topic"],
+                                "difficulty": q["difficulty"],
+                                "score": feedback["score"],
+                                "verdict": feedback["verdict"],
+                                "improved_query": feedback["improved_query"],
+                                "explanation": feedback["explanation"]
+                            }
+                        )
 
-                    if feedback["score"] >= 6:
-                        st.session_state.streak += 1
+                        save_attempt(
+                            question_id=q["id"],
+                            topic=q["topic"],
+                            difficulty=q["difficulty"],
+                            user_sql=user_sql,
+                            verdict=feedback["verdict"],
+                            score=int(feedback["score"]),
+                            weaknesses=", ".join(feedback["mistakes"])
+                        )
+
+                        if feedback["score"] >= 6:
+                            st.session_state.streak += 1
+                        else:
+                            st.session_state.streak = 0
+
+                        if st.session_state.mock_index < len(st.session_state.mock_questions) - 1:
+                            st.session_state.mock_index += 1
+                        else:
+                            st.session_state.mock_completed = True
+
+                        st.rerun()
                     else:
-                        st.session_state.streak = 0
+                        st.warning("Please enter your SQL answer before continuing.")
 
-                    if st.session_state.mock_index < len(st.session_state.mock_questions) - 1:
-                        st.session_state.mock_index += 1
-                    else:
-                        st.session_state.mock_completed = True
-
+            with col_b:
+                if st.button("Exit Mock Interview"):
+                    exit_mock_interview()
                     st.rerun()
-                else:
-                    st.warning("Please enter your SQL answer before continuing.")
-
-            if st.button("Exit Mock Interview"):
-                exit_mock_interview()
-                st.rerun()
 
         elif st.session_state.mock_completed:
             st.subheader("Mock Interview Result")
@@ -408,6 +551,7 @@ if tab1:
                 if st.button("Exit Mock Interview"):
                     exit_mock_interview()
                     st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
 if tab2:
     st.session_state.active_tab = "Feedback"
@@ -419,29 +563,29 @@ if tab2:
 
         st.markdown(
             f"""
-            <div style="
-                padding:16px;
-                border-radius:12px;
-                background-color:{verdict_color};
-                color:white;
-                font-weight:600;
-                margin-bottom:16px;
-            ">
+            <div class="verdict-banner" style="background-color:{verdict_color};">
                 Verdict: {feedback['verdict']} | Score: {feedback['score']} / 10
             </div>
             """,
             unsafe_allow_html=True
         )
 
+        st.markdown('<div class="feedback-card">', unsafe_allow_html=True)
         st.write("### Mistakes")
         for mistake in feedback["mistakes"]:
             st.write(f"- {mistake}")
 
+        st.markdown('<hr class="soft">', unsafe_allow_html=True)
+
         st.write("### Improved Query")
         st.code(feedback["improved_query"], language="sql")
 
+        st.markdown('<hr class="soft">', unsafe_allow_html=True)
+
         st.write("### Explanation")
         st.write(feedback["explanation"])
+
+        st.markdown('<hr class="soft">', unsafe_allow_html=True)
 
         st.write("### Next Recommendation")
         st.info(feedback["next_recommendation"])
@@ -456,16 +600,17 @@ if tab2:
             rq = st.session_state.recommended_question
 
             st.write("### Recommended Next Question")
-
             st.markdown(
                 f"""
-                **{rq['title']}**  
-                Topic: {rq['topic']}  
-                Difficulty: {rq['difficulty']}  
-
-                {rq['prompt']}
-                """
+                <div class="badge-row">
+                    <span class="badge">{rq['title']}</span>
+                    <span class="badge">Topic: {rq['topic']}</span>
+                    <span class="badge">Difficulty: {rq['difficulty']}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
+            st.write(rq["prompt"])
 
             if st.button("Start This Question"):
                 st.session_state.current_question = rq
@@ -475,6 +620,8 @@ if tab2:
                 st.session_state.selected_difficulty = rq["difficulty"]
                 st.session_state.active_tab = "Practice"
                 st.rerun()
+
+        st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.info("No feedback yet. Submit an answer in the Practice tab.")
 
@@ -511,9 +658,12 @@ if tab3:
     with col5:
         st.metric("Current Streak", st.session_state.streak)
 
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.write(f"### Current Level: {level}")
     st.info(f"Adaptive Engine Difficulty: {st.session_state.current_difficulty}")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.write("### Topic Performance")
     if summary:
         st.table([
@@ -526,7 +676,9 @@ if tab3:
         ])
     else:
         st.info("No attempts yet.")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
     st.write("### Recent Attempts")
     if attempts:
         st.table([
@@ -542,3 +694,4 @@ if tab3:
         ])
     else:
         st.info("No attempts recorded yet.")
+    st.markdown('</div>', unsafe_allow_html=True)
